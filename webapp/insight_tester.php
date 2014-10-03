@@ -64,7 +64,6 @@
         </div>
       </nav>
 <div class="container">
-    <a target="_blank"https://shares.thinkup.com/insight?<?php echo $_SERVER['QUERY_STRING'] ?> style="float:right;" href="https://shares.thinkup.com/insight?<?php echo $_SERVER['QUERY_STRING'] ?>">Get image</a>
     <div class="stream stream-permalink">
             <div class="date-group today">
         <div class="date-marker">
@@ -308,7 +307,13 @@
 </div>
   <div class="share-or-edit">
     <i class="editor editToggle fa fa-pencil-square-o fa-2" title="Click to edit this insight"></i>
-    <button class="generate-issue btn btn-default btn-action">Make it an issue!</button>
+    <button class="generate-issue btn btn-default btn-action btn-bottom">Make it an issue!</button>
+    <a class="twitter" href="https://twitter.com/intent/tweet?related=thinkup&amp;text=::headline::&amp;url=::url::&amp;via=thinkup">
+      <button class="btn btn-bottom btn-action btn-primary">Tweet this</button>
+    </a>
+    <a class="get-image" target="_blank"https://shares.thinkup.com/insight?<?php echo $_SERVER['QUERY_STRING'] ?> style="float:right;" href="https://shares.thinkup.com/insight?<?php echo $_SERVER['QUERY_STRING'] ?>">
+      <button class="btn btn-bottom btn-action">Get image</button>
+    </a>
   </div>
 
   </div><!-- end stream -->
@@ -436,8 +441,10 @@ Specify the following hero image attributes:
       margin: 0 auto;
       width: 540px;
     }
-    .generate-issue {
+    .btn-bottom {
       float: right;
+      margin-left: 10px;
+      height: 34px;
     }
     .preview { margin-right: 120px; }
     .previewer label.blue { width: 118px; background-color: #46BCFF; color: white; height: 20px; padding-left: 10px}
@@ -641,6 +648,10 @@ Specify the following hero image attributes:
           var url = "https://twitter.com/intent/tweet?related=thinkup&amp;text=::headline::&amp;url=::url::&amp;via=thinkup";
           url = url.replace('::headline::', encodeURIComponent($('#headline').val()));
           url = url.replace('::url::', encodeURIComponent(window.location.href));
+          this.href = url;
+        });
+        $('a.get-image').click(function() {
+          var url = "https://shares.thinkup.com/insight" + window.location.search;
           this.href = url;
         });
 
