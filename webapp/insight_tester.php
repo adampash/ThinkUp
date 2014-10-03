@@ -35,6 +35,8 @@
     <link href="assets/css/vendor/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/vendor/font-awesome.min.css" rel="stylesheet">
     <link href='//fonts.googleapis.com/css?family=Libre+Baskerville:400,700,400italic|' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="//use.typekit.net/xzh8ady.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     <link href="assets/css/thinkup.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
