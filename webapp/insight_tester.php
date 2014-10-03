@@ -112,7 +112,6 @@
   <div class="panel-heading">
     <h2 class="panel-title"><span class="preview-headline"></span></h2>
     <img src="" alt="" width="50" height="50" class="img-circle userpic userpic-featured preview-avatar">
-    <i class="editor editToggle fa fa-pencil-square-o fa-2" title="Click to edit this insight"></i>
     </div>
   <div class="panel-desktop-right">
     <div class="panel-body">
@@ -297,14 +296,18 @@
     <div class="panel-footer">
       <div class="insight-metadata">
         <i class="fa fa--square icon icon-network"></i>
-        <a class="permalink" href="http:///?u=&n=&d=2014-06-16&s=facebookprofileprompt">Jun 16</a>
+        <a class="permalink" href="#">Jun 16</a>
       </div>
       <div class="share-menu">
-          <i class="fa fa-lock icon icon-share text-muted" title="This  account and its insights are private."></i>
+        <a class="twitter" href="https://twitter.com/intent/tweet?related=thinkup&amp;text=::headline::&amp;url=::url::&amp;via=thinkup">Tweet this</a>
       </div>
     </div>
   </div>
 </div>
+  <div class="share-or-edit">
+    <i class="editor editToggle fa fa-pencil-square-o fa-2" title="Click to edit this insight"></i>
+    <button class="generate-issue btn btn-default btn-action">Make it an issue!</button>
+  </div>
 
   </div><!-- end stream -->
 </div><!-- end container -->
@@ -312,18 +315,19 @@
 </div><!-- end page-content -->
 
 <style>
+    .share-or-edit {
+      margin: 0 auto;
+      width: 540px;
+    }
+    .generate-issue {
+      float: right;
+    }
+    .preview { margin-right: 120px; }
     .previewer label { width: 118px; background-color: #46BCFF; color: white; height: 20px; padding-left: 10px}
-    .previewer input, .previewer textarea { width: 600px; }
+    .previewer input, .previewer textarea { width: 538px; }
     .previewer textarea { margin-bottom: 5px; }
     .previewer div .cb { width: 20px; margin-left: 5px; }
     .editor {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: white;
-      border-radius: 3px;
-      width: 20px;
-      height: 20px;
       font-size: 25px;
       cursor: pointer;
     }
@@ -515,6 +519,12 @@
           $('.editor').toggle();
           return false;
         });
+        $('a.twitter').click(function() {
+          var url = "https://twitter.com/intent/tweet?related=thinkup&amp;text=::headline::&amp;url=::url::&amp;via=thinkup";
+          url = url.replace('::headline::', encodeURIComponent($('#headline').val()));
+          url = url.replace('::url::', encodeURIComponent(window.location.href));
+          this.href = url;
+        });
 
         if (window.location.search) {
           var params = searchToObject();
@@ -537,13 +547,78 @@
           }
           $('.previewer').hide();
           $('.editor').show();
+          // set date
+          var d = new Date();
+          var dateString = "" + (d.toString().split(" ")[1]) + " " + (d.getDate());
+          $('.insight-metadata a.permalink').text(dateString);
         }
         else {
           $('.previewer').show();
           $('.editor').hide();
         }
-          update_preview();
+        update_preview();
+        if (window.callPhantom != null) {
+          window.callPhantom("hello");
+        }
   });
+</script>
+
+<script type="text/javascript">
+// Make a new issue from template
+$('.generate-issue').on('click', function() {
+  var text = "# One-liner\n\nDescribe what this insight is in a single sentence. This is the description that appears in ThinkUp's insights list, so phrase it like the others are. Current insights single sentences are:\n\n* Post activity spikes for the past 7, 30, and 365 days.\n* How often you referred to yourself (\"I\", \"me\", \"myself\", \"my\") in the past week.\n* How many more users a message has reached due to your reshare or retweet.\n\n# Full explainer\n\nHow does it make the user feel? What is the goal of this insight? \n\n# Audience for the insight\n\nWhich networks, if any, are excluded from this insight?\n\nDoes this insight serve users with less or more activity? \n\nFirst-run: does this insight show up on a user's first crawl?\n\n# How often this insight runs\n\n- [ ] Always (triggered by a data event, check the data and update insight on every crawl)\n- [ ] Daily (check the data once a day, don't regenerate every crawl)\n- [ ] Weekly on a fixed day (specify day of week per network to space these out)\n- [ ] Monthly on a fixed day with bonus magic day within first 2 weeks of use (specify day of month per network to space these out)\n- [ ] Annual on a fixed date (specify day of year)\n- [ ] Annual every 365 days from first appearance\n\n\n# Headline\n\n* :your_headline:\n\nInclude multiple variations, use third person and variables for localized network terminology.\n\nFor example:\n\n* %username has passed %total %followers!\n* More than %total people are %following %username\n\n# Body\n\n* :your_body:\n\nInclude multiple variations whenever possible.\n\nFor example: \n\n* That's more than the population of Belize.\n* That's more people than can fit in Yankee Stadium.\n\n# Tout\n\n* :your_tout:\n\nExplain how ThinkUp can help potential users, basing copy on the insight.\n\nFor example:\n\n* Want a handy list of the links you've favorited? We can help!\n* Get a look back at what you were doing on this day in years past.\n\n# Criteria and logic\n\nDescribe the rules for when this insight runs. \n\n* What data does this insight need? Last week's posts? Last month's? Just the user's posts?\n* Does the insight count replies as well as non-replies?\n* Are there baseline comparisons? What is the logic around the comparison?\n* Are there special copy cases? (for example, if the baseline comparison matches)\n* Is there a minimum threshold for any bit of data before the insight should get generated?\n\n## Emphasis\n\n- [ ] High\n- [ ] Medium\n- [ ] Low\n\n# Included elements\n\n- [x] Headline\n- [x] Text\n- [ ] Header image (image off to the left in side-by-side style insights)\n- [ ] Hero image (giant image on top)\n- [ ] List of user(s)\n- [ ] List of post(s)\n- [ ] List of link(s)\n- [ ] Action button (please specify button label and URL button should link to)\n- [ ] Line chart\n- [ ] Bar chart\n- [ ] Pie chart\n- [ ] Other viz\n- [ ] Other graphic treatment\n\n## Action button\n\nSpecify the following action button attributes:\n\n* 'label' => 'Edit Facebook Profile',\n* 'url' => 'https://www.facebook.com/me?sk=info&edit=eduwork&ref=update_info_button',\n\n\n## Hero image\n\nIf your insight includes a hero image, we encourage you to use public domain or CC-licensed images. Hero images should be at least 540px wide and be landscape. (They can be portrait, but then they're quite tall.)\n\nSpecify the following hero image attributes:\n\n* 'hero_url' => 'https://www.thinkup.com/assets/images/insights/2014-03/oscars2014.jpg',\n* 'alt_text' => 'Ellen DeGeneres posted the most popular tweet of all time',\n* 'credit' => 'Photo: @TheEllenShow',\n* 'img_link' => 'https://twitter.com/TheEllenShow/status/440322224407314432'";
+
+  var headline = $('#headline').val();
+  text = text.replace(':your_headline:', headline);
+  text = text.replace(':your_body:', $('#body').val());
+  text = text.replace(':your_tout:', $('#tout').val());
+  var $embed = $('input[type=radio]:checked');
+  if ($embed.prop('id') !== 'embed-none') {
+    var embed_type = $embed.prop('id').split('-')[1];
+    embed_type =  embed_type.substr(0, embed_type.length-1);
+    var to_find = '[ ] List of ' + embed_type;
+    text = text.replace(to_find, '[x] List of ' + embed_type);
+
+    embed_type = embed_type[0].toUpperCase() + embed_type.substr(1, embed_type.length);
+    to_find = '[ ] ' + embed_type;
+    text = text.replace(to_find, '[x] ' + embed_type);
+  }
+  $('input[type=checkbox].cb:checked').each(function(index) {
+    var embed_type = this.id.split('-')[1];
+    if (embed_type === 'hero') {
+      embed_type = embed_type[0].toUpperCase() + embed_type.substr(1, embed_type.length);
+      to_find = '[ ] ' + embed_type;
+      text = text.replace(to_find, '[x] ' + embed_type);
+      text = text.replace(/'hero_url'.*jpg'/, "'hero_url' => '" + $('#hero').val() + "'");
+    }
+    else if (embed_type === 'button') {
+      to_find = '[ ] Action ' + embed_type;
+      text = text.replace(to_find, to_find.replace('[ ]', '[x]'));
+      text = text.replace(/'label'.*Profile'/, "'label' => '" + $('#button').val() + "'");
+    }
+    else if (embed_type === 'avatar') {
+      to_find = '[ ] Header'
+      text = text.replace(to_find, to_find.replace('[ ]', '[x]'));
+      text = text.replace('image off to the left in side-by-side style insights', 'image off to the left in side-by-side style insights: ' + $('#avatar').val());
+    }
+    else if (embed_type === 'emphasis') {
+      to_find = '[ ] High'
+      text = text.replace(to_find, to_find.replace('[ ]', '[x]'));
+    }
+  });
+  text = encodeURIComponent(text);
+  var title = encodeURIComponent("New Insight: [Name this insight]");
+  var url = 'https://github.com/ginatrapani/ThinkUp/issues/new?title=' + title + '&body='+ text;
+  var win = window.open(url, '_blank');
+  if(win){
+    //Browser has allowed it to be opened
+    win.focus();
+  }else{
+    //Broswer has blocked it
+    alert('Please allow popups for this site');
+  }
+});
+
 </script>
 
 <script src="assets/js/vendor/bootstrap.min.js"></script>
