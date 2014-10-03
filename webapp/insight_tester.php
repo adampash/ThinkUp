@@ -74,36 +74,36 @@
         
         <div>
             <form method="post" action="#" class="previewer">
-                <div><label>Headline:</label> <input type="text" id="headline" value="I am the headline!" /></div>
-                <div><label>Body:</label> 
+                <div><label class="blue">Headline:</label> <input type="text" id="headline" value="I am the headline!" /></div>
+                <div><label class="blue">Body:</label> 
                   <textarea id="body">I am the body.  Lots more text goes in me, normally.</textarea>
                   <!-- <input type="text" id="body" value="I am the body.  Lots more text goes in me, normally."/> -->
                   <!-- <input type="text" id="body" value="I am the body.  Lots more text goes in me, normally."/> -->
                 </div>
-                <div><label>Hero image:</label> 
+                <div><label class="blue">Hero image:</label> 
                         <input type="text" style="width: 400px"  id="hero" value="https://www.thinkup.com/assets/images/insights/2014-05/subway.jpg" />
                         Show: <input type="checkbox" id="show-hero" class="cb" />
                 </div>
-                <div><label>Button:</label> 
+                <div><label class="blue">Button:</label> 
                         <input type="text" style="width: 400px"  id="button" value="Action!" />
                         Show: <input type="checkbox" id="show-button" class="cb" />
                 </div>
-                <div><label>Avatar:</label> 
+                <div><label class="blue">Avatar:</label> 
                         <input type="text" style="width: 400px"  id="avatar" value="https://pbs.twimg.com/profile_images/1096005346/1_normal.jpg" />
                         Show: <input type="checkbox" id="show-avatar" class="cb" />
                 </div>
-                <div><label>High emphasis:</label>
+                <div><label class="blue">High emphasis:</label>
                     <input type="checkbox" id="show-emphasis" class="cb" />
                 </div>
-                <div><label>Embed:</label> 
+                <div><label class="blue">Embed:</label> 
                   <input type="radio" name="embeds" id="embed-none" class="cb" checked />None
-                  <input type="radio" name="embeds" id="show-post" class="cb" />Post
-                  <input type="radio" name="embeds" id="show-posts" class="cb" />Posts
-                  <input type="radio" name="embeds" id="show-user" class="cb" />User
-                  <input type="radio" name="embeds" id="show-users" class="cb" />Users
-                  <input type="radio" name="embeds" id="show-bar" class="cb" />Bar chart
-                  <input type="radio" name="embeds" id="show-line" class="cb" />Line chart
-                  <input type="radio" name="embeds" id="show-pie" class="cb" />Pie chart
+                  <input type="radio" name="embeds" id="show-post" class="cb" /><label for="show-post" class="embedLabel">Post</label>
+                  <input type="radio" name="embeds" id="show-posts" class="cb" /><label for="show-posts" class="embedLabel">Posts</label>
+                  <input type="radio" name="embeds" id="show-user" class="cb" /><label for="show-user" class="embedLabel">User</label>
+                  <input type="radio" name="embeds" id="show-users" class="cb" /><label for="show-users" class="embedLabel">Users</label>
+                  <input type="radio" name="embeds" id="show-bar" class="cb" /><label for="show-bar" class="embedLabel">Bar chart</label>
+                  <input type="radio" name="embeds" id="show-line" class="cb" /><label for="show-line" class="embedLabel">Line chart</label>
+                  <input type="radio" name="embeds" id="show-pie" class="cb" /><label for="show-pie" class="embedLabel">Pie chart</label>
                 </div>
                 <button class="editToggle hideEditor btn btn-default btn-action" value="Hide editor">Hide editor</button>
             </form>
@@ -440,7 +440,8 @@ Specify the following hero image attributes:
       float: right;
     }
     .preview { margin-right: 120px; }
-    .previewer label { width: 118px; background-color: #46BCFF; color: white; height: 20px; padding-left: 10px}
+    .previewer label.blue { width: 118px; background-color: #46BCFF; color: white; height: 20px; padding-left: 10px}
+    .previewer label.embedLabel { font-weight: normal; }
     .previewer input, .previewer textarea { width: 538px; }
     .previewer textarea { margin-bottom: 5px; }
     .previewer div .cb { width: 20px; margin-left: 5px; }
