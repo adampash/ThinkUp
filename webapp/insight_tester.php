@@ -94,7 +94,7 @@
                 <div><label class="blue">High emphasis:</label>
                     <input type="checkbox" id="show-emphasis" class="cb" />
                 </div>
-                <div><label class="blue">Embed:</label> 
+                <div><label class="blue">Embed:</label>
                   <input type="radio" name="embeds" id="embed-none" class="cb" checked />None
                   <input type="radio" name="embeds" id="show-post" class="cb" /><label for="show-post" class="embedLabel">Post</label>
                   <input type="radio" name="embeds" id="show-posts" class="cb" /><label for="show-posts" class="embedLabel">Posts</label>
@@ -103,6 +103,21 @@
                   <input type="radio" name="embeds" id="show-bar" class="cb" /><label for="show-bar" class="embedLabel">Bar chart</label>
                   <input type="radio" name="embeds" id="show-line" class="cb" /><label for="show-line" class="embedLabel">Line chart</label>
                   <input type="radio" name="embeds" id="show-pie" class="cb" /><label for="show-pie" class="embedLabel">Pie chart</label>
+                </div>
+                <div><label class="blue">Color:</label> 
+                  <select class="insight-color">
+                    <option value="salmon">Salmon</option>
+                    <option value="creamsicle">Creamsicle</option>
+                    <option value="pea">Pea</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="purple">Purple</option>
+                    <option value="mint">Mint</option>
+                    <option value="bubblegum">Bubblegum</option>
+                    <option value="seabreeze">Seabreeze</option>
+                    <option value="dijon">Dijon</option>
+                    <option value="sandalwood">Sandalwood</option>
+                    <option value="caramel">Caramel</option>
+                  </select>
                 </div>
                 <button class="editToggle hideEditor btn btn-default btn-action" value="Hide editor">Hide editor</button>
             </form>
@@ -579,31 +594,32 @@ Specify the following hero image attributes:
             queryString.push(check, $('#'+check).prop('checked'));
           }
 
+          queryString.push('color', $('.insight-color').val());
+
           var embed = $("input:radio[name=embeds]:checked").attr('id');
           queryString.push('embed', embed);
 
           queryString.push('preview', '1');
         }
         var update_preview = function () {
+          update_color($('.insight-color')[0]);
           for (var i=0; i < inputs.length; i++) {
             var input = inputs[i];
             var value = $('#'+input).val()
-            // if (value !== '') {
-              if ($.inArray(input, checks) === -1) {
-                $('.preview-'+input).html(value);
+            if ($.inArray(input, checks) === -1) {
+              $('.preview-'+input).html(value);
+            }
+            else {
+              if (input === 'button') {
+                $('.preview-'+input+' .btn').html(value);
               }
-              else {
-                if (input === 'button') {
-                  $('.preview-'+input+' .btn').html(value);
-                }
-                else if (input === 'avatar') {
-                  $('.preview-'+input).attr('src', value);
-                }
-                else if (input === 'hero') {
-                  $('.preview-'+input+' img').attr('src', value);
-                }
+              else if (input === 'avatar') {
+                $('.preview-'+input).attr('src', value);
               }
-            // }
+              else if (input === 'hero') {
+                $('.preview-'+input+' img').attr('src', value);
+              }
+            }
           }
           for (var i=0; i < checks.length; i++) {
             var check = checks[i];
@@ -617,7 +633,6 @@ Specify the following hero image attributes:
               $('#'+check).hide();
             }
           }
- 
           if ($('#show-emphasis:checked').length) {
             $('.insight').addClass('insight-wide');
           }
@@ -637,7 +652,18 @@ Specify the following hero image attributes:
           }
         };
 
+        var update_color = function (element) {
+          var _ref = element.options;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            var option = _ref[_i];
+            $('.insight').removeClass("insight-" + option.value);
+          }
+          $('.insight').addClass("insight-" + element.value);
+        }
         $('.previewer :input').change(update_preview).keyup(update_preview);
+        $('.insight-color').change(function() {
+          update_color(this);
+        });
         $('.previewer :input').blur(update_url);
         $('.editToggle').click(function() {
           $('.previewer').toggle();
@@ -657,6 +683,7 @@ Specify the following hero image attributes:
 
         if (window.location.search) {
           var params = searchToObject();
+          $('.insight-color').val(params['color']);
           for (var i=0; i < inputs.length; i++) {
             var input = inputs[i];
             if (params[input] !== undefined) {
@@ -684,6 +711,8 @@ Specify the following hero image attributes:
         else {
           $('.previewer').show();
           $('.editor').hide();
+          var insightColor = $('.insight-color')[0];
+          insightColor.selectedIndex = Math.round(Math.random() * insightColor.options.length);
         }
         update_preview();
         if (window.callPhantom != null) {
