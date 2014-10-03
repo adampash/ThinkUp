@@ -314,6 +314,121 @@
 
 </div><!-- end page-content -->
 
+<div class="issue-template" style="display:none;">
+# One-liner
+
+Describe what this insight is in a single sentence. This is the description that appears in ThinkUp's insights list, so phrase it like the others are. Current insights single sentences are:
+
+* Post activity spikes for the past 7, 30, and 365 days.
+* How often you referred to yourself ("I", "me", "myself", "my") in the past week.
+* How many more users a message has reached due to your reshare or retweet.
+
+# Full explainer
+
+How does it make the user feel? What is the goal of this insight? 
+
+# Audience for the insight
+
+Which networks, if any, are excluded from this insight?
+
+Does this insight serve users with less or more activity? 
+
+First-run: does this insight show up on a user's first crawl?
+
+# How often this insight runs
+
+- [ ] Always (triggered by a data event, check the data and update insight on every crawl)
+- [ ] Daily (check the data once a day, don't regenerate every crawl)
+- [ ] Weekly on a fixed day (specify day of week per network to space these out)
+- [ ] Monthly on a fixed day with bonus magic day within first 2 weeks of use (specify day of month per network to space these out)
+- [ ] Annual on a fixed date (specify day of year)
+- [ ] Annual every 365 days from first appearance
+
+
+# Headline
+
+:your_headline:
+
+Include multiple variations, use third person and variables for localized network terminology.
+
+For example:
+
+* %username has passed %total %followers!
+* More than %total people are %following %username
+
+# Body
+
+:your_body:
+
+Include multiple variations whenever possible.
+
+For example: 
+
+* That's more than the population of Belize.
+* That's more people than can fit in Yankee Stadium.
+
+# Tout
+
+:your_tout:
+
+Explain how ThinkUp can help potential users, basing copy on the insight.
+
+For example:
+
+* Want a handy list of the links you've favorited? We can help!
+* Get a look back at what you were doing on this day in years past.
+
+# Criteria and logic
+
+Describe the rules for when this insight runs. 
+
+* What data does this insight need? Last week's posts? Last month's? Just the user's posts?
+* Does the insight count replies as well as non-replies?
+* Are there baseline comparisons? What is the logic around the comparison?
+* Are there special copy cases? (for example, if the baseline comparison matches)
+* Is there a minimum threshold for any bit of data before the insight should get generated?
+
+## Emphasis
+
+- [ ] High
+- [ ] Medium
+- [ ] Low
+
+# Included elements
+
+- [x] Headline
+- [x] Text
+- [ ] Header image (image off to the left in side-by-side style insights)
+- [ ] Hero image (giant image on top)
+- [ ] List of user(s)
+- [ ] List of post(s)
+- [ ] List of link(s)
+- [ ] Action button (please specify button label and URL button should link to)
+- [ ] Line chart
+- [ ] Bar chart
+- [ ] Other viz
+- [ ] Other graphic treatment
+
+## Action button
+
+Specify the following action button attributes:
+
+* 'label' => 'Edit Facebook Profile',
+* 'url' => 'https://www.facebook.com/me?sk=info&edit=eduwork&ref=update_info_button',
+
+
+## Hero image
+
+If your insight includes a hero image, we encourage you to use public domain or CC-licensed images. Hero images should be at least 540px wide and be landscape. (They can be portrait, but then they're quite tall.)
+
+Specify the following hero image attributes:
+
+* 'url' => 'https://www.thinkup.com/assets/images/insights/2014-03/oscars2014.jpg',
+* 'alt_text' => 'Ellen DeGeneres posted the most popular tweet of all time',
+* 'credit' => 'Photo: @TheEllenShow',
+* 'img_link' => 'https://twitter.com/TheEllenShow/status/440322224407314432'
+</div>
+
 <style>
     .share-or-edit {
       margin: 0 auto;
@@ -566,7 +681,7 @@
 <script type="text/javascript">
 // Make a new issue from template
 $('.generate-issue').on('click', function() {
-  var text = "# One-liner\n\nDescribe what this insight is in a single sentence. This is the description that appears in ThinkUp's insights list, so phrase it like the others are. Current insights single sentences are:\n\n* Post activity spikes for the past 7, 30, and 365 days.\n* How often you referred to yourself (\"I\", \"me\", \"myself\", \"my\") in the past week.\n* How many more users a message has reached due to your reshare or retweet.\n\n# Full explainer\n\nHow does it make the user feel? What is the goal of this insight? \n\n# Audience for the insight\n\nWhich networks, if any, are excluded from this insight?\n\nDoes this insight serve users with less or more activity? \n\nFirst-run: does this insight show up on a user's first crawl?\n\n# How often this insight runs\n\n- [ ] Always (triggered by a data event, check the data and update insight on every crawl)\n- [ ] Daily (check the data once a day, don't regenerate every crawl)\n- [ ] Weekly on a fixed day (specify day of week per network to space these out)\n- [ ] Monthly on a fixed day with bonus magic day within first 2 weeks of use (specify day of month per network to space these out)\n- [ ] Annual on a fixed date (specify day of year)\n- [ ] Annual every 365 days from first appearance\n\n\n# Headline\n\n* :your_headline:\n\nInclude multiple variations, use third person and variables for localized network terminology.\n\nFor example:\n\n* %username has passed %total %followers!\n* More than %total people are %following %username\n\n# Body\n\n* :your_body:\n\nInclude multiple variations whenever possible.\n\nFor example: \n\n* That's more than the population of Belize.\n* That's more people than can fit in Yankee Stadium.\n\n# Tout\n\n* :your_tout:\n\nExplain how ThinkUp can help potential users, basing copy on the insight.\n\nFor example:\n\n* Want a handy list of the links you've favorited? We can help!\n* Get a look back at what you were doing on this day in years past.\n\n# Criteria and logic\n\nDescribe the rules for when this insight runs. \n\n* What data does this insight need? Last week's posts? Last month's? Just the user's posts?\n* Does the insight count replies as well as non-replies?\n* Are there baseline comparisons? What is the logic around the comparison?\n* Are there special copy cases? (for example, if the baseline comparison matches)\n* Is there a minimum threshold for any bit of data before the insight should get generated?\n\n## Emphasis\n\n- [ ] High\n- [ ] Medium\n- [ ] Low\n\n# Included elements\n\n- [x] Headline\n- [x] Text\n- [ ] Header image (image off to the left in side-by-side style insights)\n- [ ] Hero image (giant image on top)\n- [ ] List of user(s)\n- [ ] List of post(s)\n- [ ] List of link(s)\n- [ ] Action button (please specify button label and URL button should link to)\n- [ ] Line chart\n- [ ] Bar chart\n- [ ] Pie chart\n- [ ] Other viz\n- [ ] Other graphic treatment\n\n## Action button\n\nSpecify the following action button attributes:\n\n* 'label' => 'Edit Facebook Profile',\n* 'url' => 'https://www.facebook.com/me?sk=info&edit=eduwork&ref=update_info_button',\n\n\n## Hero image\n\nIf your insight includes a hero image, we encourage you to use public domain or CC-licensed images. Hero images should be at least 540px wide and be landscape. (They can be portrait, but then they're quite tall.)\n\nSpecify the following hero image attributes:\n\n* 'hero_url' => 'https://www.thinkup.com/assets/images/insights/2014-03/oscars2014.jpg',\n* 'alt_text' => 'Ellen DeGeneres posted the most popular tweet of all time',\n* 'credit' => 'Photo: @TheEllenShow',\n* 'img_link' => 'https://twitter.com/TheEllenShow/status/440322224407314432'";
+  var text = $('.issue-template').text();
 
   var headline = $('#headline').val();
   text = text.replace(':your_headline:', headline);
