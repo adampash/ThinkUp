@@ -321,7 +321,6 @@
   </div>
 </div>
   <div class="share-or-edit">
-    <i class="editor editToggle fa fa-pencil-square-o fa-2" title="Click to edit this insight"></i>
     <button class="generate-issue btn btn-default btn-action btn-bottom">Make it an issue!</button>
     <a class="twitter" href="https://twitter.com/intent/tweet?related=thinkup&amp;text=::headline::&amp;url=::url::&amp;via=thinkup">
       <button class="btn btn-bottom btn-action btn-primary">Tweet this</button>
@@ -329,6 +328,7 @@
     <a class="get-image" target="_blank"https://shares.thinkup.com/insight?<?php echo $_SERVER['QUERY_STRING'] ?> style="float:right;" href="https://shares.thinkup.com/insight?<?php echo $_SERVER['QUERY_STRING'] ?>">
       <button class="btn btn-bottom btn-action">Get image</button>
     </a>
+    <button class="editor editToggle btn btn-action btn-bottom">Edit</button>
   </div>
 
   </div><!-- end stream -->
@@ -344,6 +344,8 @@ Describe what this insight is in a single sentence. This is the description that
 * Post activity spikes for the past 7, 30, and 365 days.
 * How often you referred to yourself ("I", "me", "myself", "my") in the past week.
 * How many more users a message has reached due to your reshare or retweet.
+
+:insight_tester:
 
 # Full explainer
 
@@ -467,10 +469,6 @@ Specify the following hero image attributes:
     .previewer input, .previewer textarea { width: 538px; }
     .previewer textarea { margin-bottom: 5px; }
     .previewer div .cb { width: 20px; margin-left: 5px; }
-    .editor {
-      font-size: 25px;
-      cursor: pointer;
-    }
     .hideEditor {
       margin-left: 125px;
       margin-top: 10px;
@@ -730,6 +728,9 @@ $('.generate-issue').on('click', function() {
   text = text.replace(':your_headline:', headline);
   text = text.replace(':your_body:', $('#body').val());
   text = text.replace(':your_tout:', $('#tout').val());
+  var imgUrl = "https://shares.thinkup.com/insight" + window.location.search;
+  var tester = "![Insight preview](" + imgUrl + ")\n[Insight preview](" + window.location.href + ")";
+  text = text.replace(':insight_tester:', tester);
   var $embed = $('input[type=radio]:checked');
   if ($embed.prop('id') !== 'embed-none') {
     var embed_type = $embed.prop('id').split('-')[1];
