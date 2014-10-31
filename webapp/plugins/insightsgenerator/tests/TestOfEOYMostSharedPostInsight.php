@@ -162,14 +162,11 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $this->assertIsA($result, "Insight");
         $year = date('Y');
         $this->assertEqual("@buffy's most-retweeted tweet of $year", $result->headline);
-        $this->assertEqual("Tweet, retweet, repeat. In $year, @buffy earned the most retweets for these gems.",
-            $result->text);
-
+        $this->assertEqual("Tweet, retweet, repeat. In $year, @buffy earned the " .
+            "most retweets for these gems.", $result->text);
 
         $this->dumpRenderedInsight($result, "Normal case, Twitter");
     }
-
-
 
     public function testFacebookNormalCase() {
         // set up and test facebook
@@ -220,8 +217,8 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $this->assertIsA($result, "Insight");
         $year = date('Y');
         $this->assertEqual("Buffy Summers's most-shared status update of $year", $result->headline);
-        $this->assertEqual("With shares on the rise, $year was a bull market for Buffy Summers's most-shared status updates.",
-            $result->text);
+        $this->assertEqual("With shares on the rise, $year was a bull market for " .
+            "Buffy Summers's most-shared status updates.", $result->text);
 
         // $this->dumpRenderedInsight($result, "Normal case: Facebook");
         $this->dumpAllHTML();
@@ -254,8 +251,8 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $this->assertIsA($result, "Insight");
         $year = date('Y');
         $this->assertEqual("@buffy's most-retweeted tweet of $year", $result->headline);
-        $this->assertEqual("Tweet, retweet, repeat. In $year, @buffy earned the most retweets for this gem.",
-            $result->text);
+        $this->assertEqual("Tweet, retweet, repeat. In $year, @buffy earned the " .
+            "most retweets for this gem.", $result->text);
 
         $this->dumpRenderedInsight($result, "One match: Twitter");
     }
@@ -287,8 +284,8 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $this->assertIsA($result, "Insight");
         $year = date('Y');
         $this->assertEqual("Buffy Summers's most-shared status update of $year", $result->headline);
-        $this->assertEqual("With shares on the rise, $year was a bull market for Buffy Summers's most-shared status update.",
-            $result->text);
+        $this->assertEqual("With shares on the rise, $year was a bull market for " .
+            "Buffy Summers's most-shared status update.", $result->text);
 
         $this->dumpRenderedInsight($result, "One match: Facebook");
     }
@@ -320,11 +317,10 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $this->assertIsA($result, "Insight");
         $year = date('Y');
         $this->assertEqual("Retweets aren't everything", $result->headline);
-        $this->assertEqual("@buffy didn't get any retweets in $year, which is a-okay. We're not all here to broadcast.",
-            $result->text);
+        $this->assertEqual("@buffy didn't get any retweets in $year, which is a-okay. " .
+            "We're not all here to broadcast.", $result->text);
 
         $this->dumpRenderedInsight($result, "No matches: Twitter");
-
     }
 
     public function testFacebookNoMatches() {
@@ -354,8 +350,9 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $this->assertIsA($result, "Insight");
         $year = date('Y');
         $this->assertEqual("Shares aren't everything", $result->headline);
-        $this->assertEqual("No one shared Buffy Summers's status updates on Facebook in $year — not that there's anything wrong with that. Sometimes it's best to keep things close-knit.",
-            $result->text);
+        $this->assertEqual("No one shared Buffy Summers's status updates on Facebook " .
+            "in $year — not that there's anything wrong with that. Sometimes it's best " .
+            "to keep things close-knit.", $result->text);
 
         $this->dumpRenderedInsight($result, "No matches: Facebook");
     }
@@ -422,7 +419,7 @@ class TestOfEOYMostSharedPostInsight extends ThinkUpInsightUnitTestCase {
         $insight_dao = new InsightMySQLDAO();
         $today = date ('Y-m-d');
         $result = $insight_dao->getInsight('eoy_most_shared', $this->instance->id, $today);
-        $this->assertPattern("/100 shares/", $result->related_data);
+        $this->assertPattern("/100 reshares/", $result->related_data);
     }
 
     private function dumpAllHTML() {

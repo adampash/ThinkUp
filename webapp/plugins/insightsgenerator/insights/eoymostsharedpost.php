@@ -1,7 +1,8 @@
 <?php
 /*
- Plugin Name: Most shared post (EOY)
- Description: User's most shared/retweeted post in current year
+ Plugin Name: Most shared post (End of Year)
+ Description: User's most shared/retweeted post in current year.
+ When: Annually on December 1
  */
 /**
  *
@@ -27,11 +28,11 @@
  *
  * Description of what this class does
  *
- * Copyright (c) 2013 Adam Pash
+ * Copyright (c) 2014 Adam Pash
  *
  * @author Adam Pash adam.pash@gmail.com
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2013 Adam Pash
+ * @copyright 2014 Adam Pash
  */
 
 class EOYMostSharedPostInsight extends InsightPluginParent implements InsightPlugin {
@@ -42,43 +43,49 @@ class EOYMostSharedPostInsight extends InsightPluginParent implements InsightPlu
             $this->logger->logInfo("Begin generating insight", __METHOD__.','.__LINE__);
             $filename = basename(__FILE__, ".php");
 
-            $top_three_shared = $this->topThreeThisYear($instance);
-
             $insight = new Insight();
             $insight->instance_id = $instance->id;
             $insight->slug = 'eoy_most_shared';
             $insight->date = date('Y-m-d');
             $insight->eoy = true;
 
+            $top_three_shared = $this->topThreeThisYear($instance);
             $year = date('Y');
 
             $copy = array(
                 'twitter' => array(
                     'normal' => array(
                         'headline' => "%username's most-retweeted tweet of $year",
-                        'body' => "Tweet, retweet, repeat. In $year, %username earned the most retweets for these gems."
+                        'body' => "Tweet, retweet, repeat. In $year, " .
+                            "%username earned the most retweets for these gems."
                     ),
                     'one' => array(
                         'headline' => "%username's most-retweeted tweet of $year",
-                        'body' => "Tweet, retweet, repeat. In $year, %username earned the most retweets for this gem."
+                        'body' => "Tweet, retweet, repeat. In $year, " .
+                            "%username earned the most retweets for this gem."
                     ),
                     'none' => array(
                         'headline' => "Retweets aren't everything",
-                        'body' => "%username didn't get any retweets in $year, which is a-okay. We're not all here to broadcast."
+                        'body' => "%username didn't get any retweets in $year, " .
+                            "which is a-okay. We're not all here to broadcast."
                     ),
                 ),
                 'facebook' => array(
                     'normal' => array(
                         'headline' => "%username's most-shared status update of $year",
-                        'body' => "With shares on the rise, $year was a bull market for %username's most-shared status updates."
+                        'body' => "With shares on the rise, $year was a bull " .
+                            "market for %username's most-shared status updates."
                     ),
                     'one' => array(
                         'headline' => "%username's most-shared status update of $year",
-                        'body' => "With shares on the rise, $year was a bull market for %username's most-shared status update."
+                        'body' => "With shares on the rise, $year was a " .
+                            "bull market for %username's most-shared status update."
                     ),
                     'none' => array(
                         'headline' => "Shares aren't everything",
-                        'body' => "No one shared %username's status updates on Facebook in $year — not that there's anything wrong with that. Sometimes it's best to keep things close-knit."
+                        'body' => "No one shared %username's status updates on " .
+                            "Facebook in $year — not that there's anything wrong " .
+                            "with that. Sometimes it's best to keep things close-knit."
                     ),
                 )
             );
@@ -88,11 +95,9 @@ class EOYMostSharedPostInsight extends InsightPluginParent implements InsightPlu
 
             if (sizeof($top_three_shared) > 1) {
                 $type = 'normal';
-            }
-            else if (sizeof($top_three_shared) == 1) {
+            } else if (sizeof($top_three_shared) == 1) {
                 $type = 'one';
-            }
-            else {
+            } else {
                 $type = 'none';
             }
 
@@ -111,11 +116,8 @@ class EOYMostSharedPostInsight extends InsightPluginParent implements InsightPlu
             $insight->filename = $filename;
 
             foreach ($top_three_shared as $post) {
-                $share_type = $network == 'twitter' ? " retweets" : " shares";
-                if ($post->retweet_count_cache == 1) {
-                    $share_type = substr($share_type, 0, -1);
-                }
-                $post->count = $post->retweet_count_cache . $share_type;
+                $post->count = $post->retweet_count_cache . " " .
+                    $this->terms->getNoun('retweet', $post->retweet_count_cache > 1);
             }
             $insight->setPosts($top_three_shared);
 
@@ -126,9 +128,16 @@ class EOYMostSharedPostInsight extends InsightPluginParent implements InsightPlu
         }
     }
 
+
+    /**
+     * Get three most retweeted posts this year
+     * @param Instance $instance
+     * @param str $order Defaults to 'retweets'
+     * @return array Three most retweeted posts in descending order
+     */
     public function topThreeThisYear(Instance $instance, $order='retweets') {
         $post_dao = DAOFactory::getDAO('PostDAO');
-        $days = $this->daysSinceJanFirst();
+        $days = Utils::daysSinceJanFirst();
 
         $posts = $post_dao->getAllPostsByUsernameOrderedBy(
             $instance->network_username,
@@ -141,13 +150,7 @@ class EOYMostSharedPostInsight extends InsightPluginParent implements InsightPlu
         );
         return $posts;
     }
-
-    public static function daysSinceJanFirst() {
-        $year = date('Y');
-        return (int) floor((time() - strtotime("01-01-$year"))/(60*60*24));
-    }
 }
 
 $insights_plugin_registrar = PluginRegistrarInsights::getInstance();
 $insights_plugin_registrar->registerInsightPlugin('EOYMostSharedPostInsight');
-
