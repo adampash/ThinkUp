@@ -58,7 +58,7 @@ class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin
             $total_posts = 0;
 
             foreach ($last_year_of_posts as $post) {
-                $count += self::hasFirstPersonReferences($post->post_text) ? 1 : 0;
+                $count += Utils::hasFirstPersonReferences($post->post_text) ? 1 : 0;
                 $total_posts++;
             }
 
@@ -88,30 +88,6 @@ class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin
         }
 
         $this->logger->logInfo("Done generating insight", __METHOD__.','.__LINE__);
-    }
-
-    /**
-     * Determine if "I", "me", "my", "myself" or "mine" appear in text.
-     * @param str $text
-     * @return bool Does "I", "me", "my", "myself" or "mine" appear in $text
-     */
-    public static function hasFirstPersonReferences($text) {
-        $count = 0;
-        $matches = array();
-        $url_free_text = preg_replace('!https?://[\S]+!', ' ', $text);
-        $depunctuated_text = " ". preg_replace('/[^a-z0-9]+/i', ' ', $url_free_text) ." ";
-
-        preg_match_all('/\b(?:I|myself|my|mine)\b/i', $depunctuated_text, $matches);
-        $notmes = count($matches[0]);
-        preg_match_all('/\b\.me\b/i', $text, $me_matches);
-        $dotmes = count($me_matches[0]);
-        preg_match_all('/\bme\b/i', $text, $me_matches);
-        $mes = count($me_matches[0]);
-
-        if ($notmes || $mes > $dotmes) {
-            return true;
-        }
-        return false;
     }
 
     /**
