@@ -120,6 +120,41 @@ class TestOfEOYAllAboutYouInsight extends ThinkUpInsightUnitTestCase {
         // $this->dumpAllHTML();
     }
 
+    public function testTwitterNoMatches() {
+        // set up all-about-me posts
+        $builders = self::setUpPublicInsight($this->instance);
+        // set up normal non-me posts
+        for ($i=0; $i<5; $i++) {
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => 'This is a post',
+                    'pub_date' => '2014-02-07',
+                    'author_username' => $this->instance->network_username,
+                    'network' => $this->instance->network,
+                )
+            );
+        }
+        $posts = array();
+        $insight_plugin = new EOYAllAboutYouInsight();
+        $insight_plugin->generateInsight($this->instance, null, $posts, 3);
+        //
+        // Assert that insight got inserted
+        $insight_dao = new InsightMySQLDAO();
+        $today = date ('Y-m-d');
+        $result = $insight_dao->getInsight('eoy_all_about_you', $this->instance->id, $today);
+        $this->assertNotNull($result);
+        $this->assertIsA($result, "Insight");
+        $year = date('Y');
+        $this->assertEqual("A year's worth of @ev", $result->headline);
+        $this->assertEqual("In $year, none of @ev's tweets contained the words " .
+            "&ldquo;I&rdquo;, &ldquo;me&rdquo;, &ldquo;my&rdquo;, " .
+            "&ldquo;mine&rdquo;, or &ldquo;myself&rdquo;. Sometimes, you've " .
+            "just got to get personal &mdash; unless you're @ev, apparently!", $result->text);
+
+        $this->dumpRenderedInsight($result, "No matches, Twitter");
+        // $this->dumpAllHTML();
+    }
+
     private function dumpAllHTML() {
         $controller = new InsightStreamController();
         $_GET['u'] = $this->instance->network_username;

@@ -66,18 +66,33 @@ class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin
                 "A year's worth of %username"
             ));
             $percent = round($count / $total_posts * 100);
-            $plural = count($last_week_of_posts) > 1;
-            $insight_text = $this->getVariableCopy(array(
-                    "In $year, <strong>$percent%</strong> of %username's tweets " .
-                    "&mdash; a grand total of %total of them &mdash; contained " .
-                    "the words &ldquo;I&rdquo;, &ldquo;me&rdquo;, &ldquo;my&rdquo;, " .
-                    "&ldquo;mine&rdquo;, or &ldquo;myself&rdquo;. Sometimes, " .
-                    "you've just got to get personal."
-                ),
-                array(
-                    'total' => $count
-                )
-            );
+            if ($count > 0) {
+                $insight_text = $this->getVariableCopy(
+                    array(
+                        "In $year, <strong>$percent%</strong> of %username's tweets " .
+                        "&mdash; a grand total of %total of them &mdash; contained " .
+                        "the words &ldquo;I&rdquo;, &ldquo;me&rdquo;, &ldquo;my&rdquo;, " .
+                        "&ldquo;mine&rdquo;, or &ldquo;myself&rdquo;. Sometimes, " .
+                        "you've just got to get personal."
+                    ),
+                    array(
+                        'total' => $count
+                    )
+                );
+            } else {
+                $insight_text = $this->getVariableCopy(
+                    array(
+                        "In $year, none of %username's tweets contained " .
+                        "the words &ldquo;I&rdquo;, &ldquo;me&rdquo;, &ldquo;my&rdquo;, " .
+                        "&ldquo;mine&rdquo;, or &ldquo;myself&rdquo;. Sometimes, " .
+                        "you've just got to get personal &mdash; unless you're " .
+                        "%username, apparently!"
+                    ),
+                    array(
+                        'total' => $count
+                    )
+                );
+            }
 
             $insight->headline = $headline;
             $insight->text = $insight_text;
