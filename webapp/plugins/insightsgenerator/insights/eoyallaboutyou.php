@@ -26,8 +26,11 @@
  * You should have received a copy of the GNU General Public License along with ThinkUp.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
+ * Copyright (c) 2014 Adam Pash
+ *
+ * @author Adam Pash adam.pash@gmail.com
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2012-2014 Gina Trapani
+ * @copyright 2014 Adam Pash
  */
 
 class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin {
@@ -41,10 +44,19 @@ class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin
         //     $regenerate_existing_insight=false, $day_of_week = $day_of_week, count($last_week_of_posts));
         $should_generate_insight = true;
         if ($should_generate_insight) {
-            $text = '';
+            $insight = new Insight();
+            $insight->instance_id = $instance->id;
+            $insight->slug = 'eoy_all_about_you';
+            $insight->date = date('Y-m-d');
+            $insight->eoy = true;
+
             $count = 0;
-            $last_year_of_posts = getYearOfPostsIterator($this->username, $instance->network);
+            $post_dao = DAOFactory::getDAO('PostDAO');
+            $year = date('Y');
+
+            $last_year_of_posts = $this->getYearOfPosts($instance);
             $total_posts = 0;
+
             foreach ($last_year_of_posts as $post) {
                 $count += self::hasFirstPersonReferences($post->post_text) ? 1 : 0;
                 $total_posts++;
@@ -55,23 +67,24 @@ class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin
             ));
             $percent = round($count / $total_posts * 100);
             $plural = count($last_week_of_posts) > 1;
-            $insight_text = "<strong>$percent%</strong> of %username's tweets " .
-                " contained the words &ldquo;I&rdquo;, &ldquo;me&rdquo;, " .
-                "&ldquo;my&rdquo;, &ldquo;mine&rdquo;, or &ldquo;myself&rdquo; " .
-                "in $year. Sometimes, you've just got to get personal.";
+            $insight_text = $this->getVariableCopy(array(
+                    "In $year, <strong>$percent%</strong> of %username's tweets " .
+                    "&mdash; a grand total of %total of them &mdash; contained " .
+                    "the words &ldquo;I&rdquo;, &ldquo;me&rdquo;, &ldquo;my&rdquo;, " .
+                    "&ldquo;mine&rdquo;, or &ldquo;myself&rdquo;. Sometimes, " .
+                    "you've just got to get personal."
+                ),
+                array(
+                    'total' => $count
+                )
+            );
 
-            $my_insight = new Insight();
+            $insight->headline = $headline;
+            $insight->text = $insight_text;
+            $insight->filename = basename(__FILE__, ".php");
+            $insight->emphasis = Insight::EMPHASIS_HIGH;
 
-            $my_insight->slug = 'eoy_all_about_you';
-            $my_insight->instance_id = $instance->id;
-            $my_insight->date = $this->insight_date;
-            $my_insight->headline = $headline;
-            $my_insight->text = $insight_text;
-            $my_insight->header_image = $header_image;
-            $my_insight->filename = basename(__FILE__, ".php");
-            $my_insight->emphasis = Insight::EMPHASIS_HIGH;
-
-            $this->insight_dao->insertInsight($my_insight);
+            $this->insight_dao->insertInsight($insight);
         }
 
         $this->logger->logInfo("Done generating insight", __METHOD__.','.__LINE__);
@@ -100,6 +113,28 @@ class EOYAllAboutYouInsight extends InsightPluginParent implements InsightPlugin
         }
         return false;
     }
+
+    /**
+     * Get year of posts as an iterator
+     * @param Instance $instance
+     * @return PostIterator $posts
+     */
+    public function getYearOfPosts(Instance $instance) {
+        $post_dao = DAOFactory::getDAO('PostDAO');
+        $days = Utils::daysSinceJanFirst();
+
+        $posts = $post_dao->getAllPostsByUsernameOrderedBy(
+            $instance->network_username,
+            $network=$instance->network,
+            $count=0,
+            $order_by='pub_date',
+            $in_last_x_days = $days,
+            $iterator = true,
+            $is_public = false
+        );
+        return $posts;
+    }
+
 }
 
 $insights_plugin_registrar = PluginRegistrarInsights::getInstance();
