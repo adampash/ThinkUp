@@ -65,18 +65,18 @@ class EOYExclamationCountInsight extends InsightPluginParent implements InsightP
             $total_posts = 0;
 
             $months = array(
-                'January',
-                'February',
-                'March',
-                'April',
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
                 'May',
-                'June',
-                'July',
-                'August',
-                'September',
-                'October',
-                'November',
-                'December'
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec'
             );
             foreach ($months as $month) {
                 $point_chart[$month] = 0;
@@ -84,7 +84,7 @@ class EOYExclamationCountInsight extends InsightPluginParent implements InsightP
             foreach ($last_year_of_posts as $post) {
                 if ($this->hasExclamationPoint($post->post_text)) {
                     $date = new DateTime($post->pub_date);
-                    $month = $date->format('F');
+                    $month = $date->format('M');
                     $point_chart[$month]++;
                     $count++;
                 }
