@@ -84,7 +84,6 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
 
         $count = 0;
         foreach($posts as $key => $value) {
-            $this->debug($value->post_text);
             $count += $insight_plugin->hasFBomb($value) ? 1 : 0;
         }
 
@@ -103,7 +102,7 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
             for ($j=0; $j<$i; $j++) {
                 $builders[] = FixtureBuilder::build('posts',
                     array(
-                        'post_text' => 'This is a post that I did!',
+                        'post_text' => 'Fuck yeah, this is a post that I did!',
                         'pub_date' => "$year-$month-07",
                         'author_username' => $this->instance->network_username,
                         'network' => $this->instance->network,
@@ -123,16 +122,16 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
         $this->assertNotNull($result);
         $this->assertIsA($result, "Insight");
         $year = date('Y');
-        $this->assertEqual("The !!!'s of Twitter, $year", $result->headline);
-        $this->assertEqual("OMG! In $year, @ev used exclamation points in <strong>78 " .
-            "tweets</strong>. That's 100% of @username's total tweets this year!",
+        $this->assertEqual("@ev gave 78 fucks on Twitter in $year", $result->headline);
+        $this->assertEqual("@ev said &ldquo;fuck&rdquo; <strong>78 times</strong> on Twitter this " .
+            "year, with December eliciting the most fucks. Overall: Great fucking year.",
             $result->text);
 
         $this->dumpRenderedInsight($result, "Normal case, Twitter");
         // $this->dumpAllHTML();
     }
 
-    public function testTwitterNoMatches() {
+    public function testTwitterOneMatch() {
         $builders = self::setUpPublicInsight($this->instance);
         $year = Date('Y');
         // set up posts with no exclamation
@@ -150,6 +149,14 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
                 )
             );
         }
+        $builders[] = FixtureBuilder::build('posts',
+            array(
+                'post_text' => 'This is a fucking post that I did',
+                'pub_date' => "$year-$month-07",
+                'author_username' => $this->instance->network_username,
+                'network' => $this->instance->network,
+            )
+        );
 
         $posts = array();
         $insight_plugin = new EOYFBombCountInsight();
@@ -162,12 +169,13 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
         $this->assertNotNull($result);
         $this->assertIsA($result, "Insight");
         $year = date('Y');
-        $this->assertEqual("@ev is unimpressed with $year", $result->headline);
-        $this->assertEqual("In $year, @ev didn't use one exclamation point on " .
-            "Twitter. Must be holding out for something really exciting!", $result->text);
+        $this->assertEqual("@ev gave 1 fuck on Twitter in $year", $result->headline);
+        $this->assertEqual("@ev said &ldquo;fuck&rdquo; <strong>once</strong> on Twitter this " .
+            "year, in December. Overall: Great fucking year.",
+            $result->text);
 
-        $this->dumpRenderedInsight($result, "No matches, Twitter");
-        // $this->dumpAllHTML();
+        // $this->dumpRenderedInsight($result, "One match, Twitter");
+        $this->dumpAllHTML();
     }
 
 
@@ -185,7 +193,7 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
             for ($j=0; $j<$i; $j++) {
                 $builders[] = FixtureBuilder::build('posts',
                     array(
-                        'post_text' => 'This is a post that I did!',
+                        'post_text' => 'Fuck yeah, this is a post that I did!',
                         'pub_date' => "$year-$month-07",
                         'author_username' => $this->instance->network_username,
                         'network' => $this->instance->network,
@@ -205,18 +213,17 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
         $this->assertNotNull($result);
         $this->assertIsA($result, "Insight");
         $year = date('Y');
-        $this->assertEqual("Mark Zuckerberg's emphatic $year on Facebook!",
+        $this->assertEqual("Mark Zuckerberg is redefining the &ldquo;f&rdquo; in &ldquo;Facebook&rdquo;",
             $result->headline);
-        $this->assertEqual("Enthusiasm is contagious, and in $year, Mark Zuckerberg " .
-            "spread the excitement in a total of <strong>78 posts</strong> ".
-            "containing exclamation points. That's 100% of Mark Zuckerberg's total " .
-            "Facebook posts this year!", $result->text);
+        $this->assertEqual("Mark Zuckerberg dropped 78 f-bombs on Facebook in $year, with " .
+            "December on the receiving end of the most fucks. Fuck yeah.",
+            $result->text);
 
         $this->dumpRenderedInsight($result, "Normal case, Facebook");
         // $this->dumpAllHTML();
     }
 
-    public function testFacebookNoMatches() {
+    public function testFacebookOneMatch() {
         $this->instance->network_username = 'Mark Zuckerberg';
         $this->instance->network = 'facebook';
         $builders = self::setUpPublicInsight($this->instance);
@@ -236,6 +243,14 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
                 )
             );
         }
+        $builders[] = FixtureBuilder::build('posts',
+            array(
+                'post_text' => 'Fuck yeah, this is a post that I did',
+                'pub_date' => "$year-$month-07",
+                'author_username' => $this->instance->network_username,
+                'network' => $this->instance->network,
+            )
+        );
 
         $posts = array();
         $insight_plugin = new EOYFBombCountInsight();
@@ -248,12 +263,13 @@ class TestOfEOYFBombCountInsight extends ThinkUpInsightUnitTestCase {
         $this->assertNotNull($result);
         $this->assertIsA($result, "Insight");
         $year = date('Y');
-        $this->assertEqual("Mark Zuckerberg is unimpressed with $year", $result->headline);
-        $this->assertEqual("In $year, Mark Zuckerberg didn't use one exclamation point on " .
-            "Facebook. Must be holding out for something really exciting!", $result->text);
+        $this->assertEqual("Mark Zuckerberg is redefining the &ldquo;f&rdquo; in &ldquo;Facebook&rdquo;",
+            $result->headline);
+        $this->assertEqual("Mark Zuckerberg dropped 1 f-bomb on Facebook in $year, in " .
+            "December. Fuck yeah.", $result->text);
 
-        // $this->dumpRenderedInsight($result, "No matches, Facebook");
-        $this->dumpAllHTML();
+        $this->dumpRenderedInsight($result, "One match, Facebook");
+        // $this->dumpAllHTML();
     }
 
     private function dumpAllHTML() {

@@ -47,7 +47,7 @@ class EOYFBombCountInsight extends InsightPluginParent implements InsightPlugin 
         if ($should_generate_insight) {
             $insight = new Insight();
             $insight->instance_id = $instance->id;
-            $insight->slug = 'eoy_exclamation_count';
+            $insight->slug = 'eoy_fbomb_count';
             $insight->date = date('Y-m-d');
             $insight->eoy = true;
 
@@ -82,7 +82,7 @@ class EOYFBombCountInsight extends InsightPluginParent implements InsightPlugin 
                 $point_chart[$month] = 0;
             }
             foreach ($last_year_of_posts as $post) {
-                if ($this->hasExclamationPoint($post->post_text)) {
+                if ($this->hasFBomb($post)) {
                     $date = new DateTime($post->pub_date);
                     $month = $date->format('M');
                     $point_chart[$month]++;
@@ -92,40 +92,38 @@ class EOYFBombCountInsight extends InsightPluginParent implements InsightPlugin 
             }
             $percent = round($count / $total_posts * 100);
 
+            $max_month = $this->getMaxMonth($point_chart);
+
             $copy = array(
                 'twitter' => array(
                     'normal' => array(
-                        'headline' => "The !!!'s of Twitter, $year",
-                        'body' => "OMG! In $year, %username used exclamation points " .
-                            "in <strong>%total tweets</strong>. That's %percent% " .
-                            "of @username's total tweets this year!"
+                        'headline' => "%username gave %total fucks on Twitter in $year",
+                        'body' => "%username said &ldquo;fuck&rdquo; <strong>%total times</strong> " .
+                            "on Twitter this year, with %month eliciting the most fucks. " .
+                            "Overall: Great fucking year."
                     ),
-                    'none' => array(
-                        'headline' => "%username is unimpressed with $year",
-                        'body' => "In $year, %username didn't use one exclamation " .
-                            "point on %network. Must be holding out for something " .
-                            "really exciting!"
+                    'one' => array(
+                        'headline' => "%username gave 1 fuck on Twitter in $year",
+                        'body' => "%username said &ldquo;fuck&rdquo; <strong>once</strong> " .
+                            "on Twitter this year, in %month. " .
+                            "Overall: Great fucking year."
                     )
                 ),
                 'facebook' => array(
                     'normal' => array(
-                        'headline' => "%username's emphatic $year on Facebook!",
-                        'body' => "Enthusiasm is contagious, and in $year, %username " .
-                            "spread the excitement in a total of <strong>%total posts" .
-                            "</strong> containing exclamation points. " .
-                            "That's %percent% of %username's total Facebook posts " .
-                            "this year!"
+                        'headline' => "%username is redefining the &ldquo;f&rdquo; in &ldquo;Facebook&rdquo;",
+                        'body' => "%username dropped %total f-bombs on Facebook in $year, " .
+                            "with %month on the receiving end of the most fucks. Fuck yeah."
                     ),
-                    'none' => array(
-                        'headline' => "%username is unimpressed with $year",
-                        'body' => "In $year, %username didn't use one exclamation " .
-                            "point on %network. Must be holding out for something " .
-                            "really exciting!"
+                    'one' => array(
+                        'headline' => "%username is redefining the &ldquo;f&rdquo; in &ldquo;Facebook&rdquo;",
+                        'body' => "%username dropped 1 f-bomb on Facebook in $year, " .
+                            "in %month. Fuck yeah."
                     )
                 )
             );
 
-            if ($count > 0) {
+            if ($count > 1) {
                 $type = 'normal';
                 $rows = array();
                 foreach ($point_chart as $label => $number) {
@@ -139,11 +137,14 @@ class EOYFBombCountInsight extends InsightPluginParent implements InsightPlugin 
                     'rows' => $rows
                 ));
             } else {
-                $type = 'none';
+                $type = 'one';
             }
             $headline = $this->getVariableCopy(
                 array(
                     $copy[$network][$type]['headline']
+                ),
+                array(
+                    'total' => $count
                 )
             );
 
@@ -154,6 +155,7 @@ class EOYFBombCountInsight extends InsightPluginParent implements InsightPlugin 
                 array(
                     'total' => $count,
                     'percent' => $percent,
+                    'month' => $max_month,
                     'network' => ucfirst($network)
                 )
             );
@@ -188,6 +190,11 @@ class EOYFBombCountInsight extends InsightPluginParent implements InsightPlugin 
             $is_public = false
         );
         return $posts;
+    }
+
+    public function getMaxMonth($point_chart) {
+        $short_month = array_search(max($point_chart),$point_chart);
+        return date('F', strtotime("$short_month 1 2014"));
     }
 
     public function hasFBomb(Post $post) {
