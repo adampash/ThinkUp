@@ -580,4 +580,18 @@ class Utils {
         }
         return false;
     }
+
+    /**
+     * Calculate popularity of post
+     * @param Post $post
+     * @return int $popularity_index The popularity index of this post
+     */
+    public static function getPopularityIndex(Post $post) {
+        $reply_count = $post->reply_count_cache;
+        $retweet_count = $post->retweet_count_cache;
+        $fav_count = $post->favlike_count_cache;
+
+        $popularity_index = (5 * $reply_count) + (3 * $retweet_count) + (2 * $fav_count);
+        return $popularity_index;
+    }
 }

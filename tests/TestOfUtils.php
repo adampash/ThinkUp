@@ -484,4 +484,23 @@ class TestOfUtils extends ThinkUpUnitTestCase {
         $this->assertTrue($has);
     }
 
+    public function testOfPopularityIndex() {
+        // posts of varying degrees of popularity
+        $posts = array();
+        Mock::generate('Post');
+        for ($i=0; $i<5; $i++) {
+            $post = new MockPost();
+            $post->retweet_count_cache = 100+$i;
+            $post->favlike_count_cache = 100+$i;
+            $post->reply_count_cache = 100+$i;
+            $posts[] = $post;
+        }
+
+        $i = 0;
+        foreach($posts as $post) {
+            $this->assertEqual(Utils::getPopularityIndex($post), 1000+$i*10);
+            $i++;
+        }
+    }
+
 }
