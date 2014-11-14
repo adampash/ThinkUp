@@ -37,9 +37,9 @@ class EOYLOLCountInsight extends InsightPluginParent implements InsightPlugin {
 // class EOYLOLCountInsight extends CriteriaMatchInsightPluginParent implements InsightPlugin {
 
     /**
-     * @var array Posts that will be included in the insight
+     * @var array Popularity scores of LOLed at posts
      */
-    var $posts_to_include = array();
+    var $scores = array();
 
     public function generateInsight(Instance $instance, User $user, $last_week_of_posts, $number_days) {
         parent::generateInsight($instance, $user, $last_week_of_posts, $number_days);
@@ -64,64 +64,81 @@ class EOYLOLCountInsight extends InsightPluginParent implements InsightPlugin {
             /**
              * Track occurences of exclamations per month
              */
-            $point_chart = array();
+            // $point_chart = array();
 
             $last_year_of_posts = $this->getYearOfPosts($instance);
-            $total_posts = 0;
+            // $total_posts = 0;
 
-            $months = array(
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dec'
-            );
-            foreach ($months as $month) {
-                $point_chart[$month] = 0;
-            }
+            // $months = array(
+            //     'Jan',
+            //     'Feb',
+            //     'Mar',
+            //     'Apr',
+            //     'May',
+            //     'Jun',
+            //     'Jul',
+            //     'Aug',
+            //     'Sep',
+            //     'Oct',
+            //     'Nov',
+            //     'Dec'
+            // );
+            // foreach ($months as $month) {
+            //     $point_chart[$month] = 0;
+            // }
             foreach ($last_year_of_posts as $post) {
                 if ($this->hasLOL($post)) {
-                    $date = new DateTime($post->pub_date);
-                    $month = $date->format('M');
-                    $point_chart[$month]++;
+                    // $date = new DateTime($post->pub_date);
+                    // $month = $date->format('M');
+                    // $point_chart[$month]++;
                     $count++;
                 }
-                $total_posts++;
+                // $total_posts++;
             }
-            $percent = round($count / $total_posts * 100);
+            $most_popular_lolees = $this->getMostPopularLOLees($instance);
+            // $percent = round($count / $total_posts * 100);
 
-            $max_month = $this->getMaxMonth($point_chart);
+            // $max_month = $this->getMaxMonth($point_chart);
 
             $copy = array(
                 'twitter' => array(
                     'normal' => array(
                         'headline' => "omg lol @twitter, $year",
-                        'body' => "%username found %total things to LOL about on " .
-                            "Twitter in $year, including these LOLed-at tweets."
+                        'body' => array(
+                            'normal' => "%username found %total things to LOL about on " .
+                                "Twitter in $year, including these LOLed-at tweets.",
+                            'one' => "%username found %total things to LOL about on " .
+                                "Twitter in $year, including this LOLed-at tweet.",
+                            'none' => "%username found %total things to LOL about on " .
+                                "Twitter in $year. Not a bad year!",
+                        )
                     ),
                     'one' => array(
                         'headline' => "Funny, but rarely LOL funny",
-                        'body' => "%username found 1 thing to LOL about on " .
-                            "Twitter in $year."
+                        'body' => array(
+                            'normal' => "%username found 1 thing to LOL about on " .
+                                "Twitter in $year."
+                        )
                     )
                 ),
                 'facebook' => array(
                     'normal' => array(
                         'headline' => "The LOLs of Facebook, $year",
-                        'body' => "ROFL. %username LOLed at %total things on Facebook " .
-                            "in $year, including these LOL-worthy status updates."
+                        'body' => array(
+                            'normal' => "ROFL. %username LOLed at %total things on Facebook " .
+                                "in $year, including these LOL-worthy status updates.",
+                            'one' => "ROFL. %username LOLed at %total things on Facebook " .
+                                "in $year, including this LOL-worthy status update.",
+                            'none' => "ROFL. %username LOLed at %total things on Facebook " .
+                                "in $year. Gotta love a good LOL.",
+                        )
                     ),
                     'one' => array(
                         'headline' => "The LOLs of Facebook, $year",
-                        'body' => "ROFL. %username LOLed once on Facebook " .
-                            "in $year."
+                        'body' => array(
+                            'normal' => "%username LOLed once on Facebook " .
+                                "in $year. Not the funniest of years."
+                        )
                     )
                 )
             );
@@ -131,19 +148,27 @@ class EOYLOLCountInsight extends InsightPluginParent implements InsightPlugin {
             }
             if ($count > 1) {
                 $type = 'normal';
-                $rows = array();
-                foreach ($point_chart as $label => $number) {
-                    $rows[] = array('c'=>array(array('v'=>$label), array('v' => $number)));
+                if (count($most_popular_lolees) > 1) {
+                    $body_type = 'normal';
+                } else if (count($most_popular_lolees) === 1) {
+                    $body_type = 'one';
+                } else {
+                    $body_type = 'none';
                 }
-                $insight->setBarChart(array(
-                    'cols' => array(
-                        array('label' => 'Month', 'type' => 'string'),
-                        array('label' => 'Occurences', 'type' => 'number'),
-                    ),
-                    'rows' => $rows
-                ));
+                // $rows = array();
+                // foreach ($point_chart as $label => $number) {
+                //     $rows[] = array('c'=>array(array('v'=>$label), array('v' => $number)));
+                // }
+                // $insight->setBarChart(array(
+                //     'cols' => array(
+                //         array('label' => 'Month', 'type' => 'string'),
+                //         array('label' => 'Occurences', 'type' => 'number'),
+                //     ),
+                //     'rows' => $rows
+                // ));
             } else {
                 $type = 'one';
+                $body_type = 'normal';
             }
             $headline = $this->getVariableCopy(
                 array(
@@ -156,18 +181,19 @@ class EOYLOLCountInsight extends InsightPluginParent implements InsightPlugin {
 
             $insight_text = $this->getVariableCopy(
                 array(
-                    $copy[$network][$type]['body']
+                    $copy[$network][$type]['body'][$body_type]
                 ),
                 array(
                     'total' => $count,
-                    'percent' => $percent,
-                    'month' => $max_month,
+                    // 'percent' => $percent,
+                    // 'month' => $max_month,
                     'network' => ucfirst($network)
                 )
             );
 
             $insight->headline = $headline;
             $insight->text = $insight_text;
+            $insight->setPosts($most_popular_lolees);
             $insight->filename = basename(__FILE__, ".php");
             $insight->emphasis = Insight::EMPHASIS_HIGH;
 
@@ -175,6 +201,21 @@ class EOYLOLCountInsight extends InsightPluginParent implements InsightPlugin {
         }
 
         $this->logger->logInfo("Done generating insight", __METHOD__.','.__LINE__);
+    }
+
+
+    /**
+     * Get at most three most popular posts that instigated a LOL
+     * @return array $posts
+     */
+    public function getMostPopularLOLees(Instance $instance) {
+        $top_three = array_slice($this->scores, 0, 3, true);
+        $posts = array();
+        $post_dao = DAOFactory::getDAO('PostDAO');
+        foreach ($top_three as $post_id => $score) {
+            $posts[] = $post_dao->getPost($post_id, $instance->network);
+        }
+        return $posts;
     }
 
     /**
@@ -209,12 +250,13 @@ class EOYLOLCountInsight extends InsightPluginParent implements InsightPlugin {
 
         if ($has_lol && $post->in_reply_to_post_id) {
             $post_dao = DAOFactory::getDAO('PostDAO');
-            $post = $post_dao->getPost($post->in_reply_to_post_id, $instance->network);
-            if ($post) {
-                // TODO create associative array of post_id => popularity_score
-                // $this->posts_to_include[] = $post;
+            $funny_post = $post_dao->getPost($post->in_reply_to_post_id, $post->network);
+            if ($funny_post) {
+                $popularity_index = Utils::getPopularityIndex($funny_post);
+                $this->scores[$funny_post->post_id] = $popularity_index;
             }
         }
+        arsort($this->scores);
         return $has_lol;
     }
 

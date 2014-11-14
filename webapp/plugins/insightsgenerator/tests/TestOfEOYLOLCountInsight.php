@@ -97,9 +97,10 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
 
         // posts that were LOLed at
         for ($i=0; $i<5; $i++) {
+            $score = $i+100;
             $builders[] = FixtureBuilder::build('posts',
                 array(
-                    'post_text' => 'I just said the funniest thing x' . $i+100 .'!',
+                    'post_text' => "I just said the funniest thing x$score!",
                     'pub_date' => "$year-02-07",
                     'author_username' => $this->instance->network_username,
                     'network' => $this->instance->network,
@@ -126,25 +127,53 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
 
         $posts = $insight_plugin->getYearOfPosts($this->instance);
 
-        $count = 0;
         foreach($posts as $key => $value) {
-            $count += $insight_plugin->hasLOL($value) ? 1 : 0;
+            $insight_plugin->hasLOL($value);
         }
 
-        $this->assertEqual(5, $count);
+        // $this->debug(Utils::varDumpToString($insight_plugin->scores));
+        $posts = $insight_plugin->getMostPopularLOLees($this->instance);
+        $this->assertEqual(3, count($posts));
+
+        $i = 0;
+        foreach ($posts as $post) {
+            $score = 104 - $i;
+            $this->assertEqual($post->post_text, "I just said the funniest thing x$score!");
+            $i++;
+        }
     }
 
     public function testTwitterNormalCase() {
         // set up posts with exclamation
         $builders = self::setUpPublicInsight($this->instance);
         $year = Date('Y');
+        // posts with LOLs
         for ($i=0; $i<5; $i++) {
             $builders[] = FixtureBuilder::build('posts',
                 array(
-                    'post_text' => 'LOL, this is a post that I did!',
-                    'pub_date' => "$year-03-07",
+                    'post_text' => 'lmao, that was a funny post!',
+                    'pub_date' => "$year-02-07",
                     'author_username' => $this->instance->network_username,
                     'network' => $this->instance->network,
+                    'in_reply_to_post_id' => $i+99999
+                )
+            );
+        }
+
+        // posts that were LOLed at
+        for ($i=0; $i<5; $i++) {
+            $score = $i+100;
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => "I just said the funniest thing x$score!",
+                    'pub_date' => "$year-02-07",
+                    'author_username' => 'Funnyperson',
+                    'author_fullname' => 'Funny Person',
+                    'network' => $this->instance->network,
+                    'post_id' => $i+99999,
+                    'retweet_count_cache' => 100+$i,
+                    'favlike_count_cache' => 100+$i,
+                    'reply_count_cache' => 100+$i
                 )
             );
         }
@@ -165,6 +194,95 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
             "including these LOLed-at tweets.", $result->text);
 
         $this->dumpRenderedInsight($result, "Normal case, Twitter");
+        // $this->dumpAllHTML();
+    }
+
+    public function testTwitterOnePost() {
+        // set up posts with exclamation
+        $builders = self::setUpPublicInsight($this->instance);
+        $year = Date('Y');
+        // posts with LOLs
+        for ($i=0; $i<5; $i++) {
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => 'lmao, that was a funny post!',
+                    'pub_date' => "$year-02-07",
+                    'author_username' => $this->instance->network_username,
+                    'network' => $this->instance->network,
+                    'in_reply_to_post_id' => 99999
+                )
+            );
+        }
+
+        // posts that were LOLed at
+        for ($i=0; $i<5; $i++) {
+            $score = $i+100;
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => "I just said the funniest thing x$score!",
+                    'pub_date' => "$year-02-07",
+                    'author_username' => 'Funnyperson',
+                    'author_fullname' => 'Funny Person',
+                    'network' => $this->instance->network,
+                    'post_id' => $i+99999,
+                    'retweet_count_cache' => 100+$i,
+                    'favlike_count_cache' => 100+$i,
+                    'reply_count_cache' => 100+$i
+                )
+            );
+        }
+
+        $posts = array();
+        $insight_plugin = new EOYLOLCountInsight();
+        $insight_plugin->generateInsight($this->instance, null, $posts, 3);
+        //
+        // Assert that insight got inserted
+        $insight_dao = new InsightMySQLDAO();
+        $today = date ('Y-m-d');
+        $result = $insight_dao->getInsight('eoy_lol_count', $this->instance->id, $today);
+        $this->assertNotNull($result);
+        $this->assertIsA($result, "Insight");
+        $year = date('Y');
+        $this->assertEqual("omg lol @twitter, $year", $result->headline);
+        $this->assertEqual("@ev found 5 things to LOL about on Twitter in $year, " .
+            "including this LOLed-at tweet.", $result->text);
+
+        $this->dumpRenderedInsight($result, "One loled at post, Twitter");
+        // $this->dumpAllHTML();
+    }
+
+    public function testTwitterNoPost() {
+        // set up posts with exclamation
+        $builders = self::setUpPublicInsight($this->instance);
+        $year = Date('Y');
+        // posts with LOLs
+        for ($i=0; $i<5; $i++) {
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => 'lmao, that was a funny post!',
+                    'pub_date' => "$year-02-07",
+                    'author_username' => $this->instance->network_username,
+                    'network' => $this->instance->network
+                )
+            );
+        }
+
+        $posts = array();
+        $insight_plugin = new EOYLOLCountInsight();
+        $insight_plugin->generateInsight($this->instance, null, $posts, 3);
+        //
+        // Assert that insight got inserted
+        $insight_dao = new InsightMySQLDAO();
+        $today = date ('Y-m-d');
+        $result = $insight_dao->getInsight('eoy_lol_count', $this->instance->id, $today);
+        $this->assertNotNull($result);
+        $this->assertIsA($result, "Insight");
+        $year = date('Y');
+        $this->assertEqual("omg lol @twitter, $year", $result->headline);
+        $this->assertEqual("@ev found 5 things to LOL about on Twitter in $year. " .
+            "Not a bad year!", $result->text);
+
+        $this->dumpRenderedInsight($result, "No loled at posts, Twitter");
         // $this->dumpAllHTML();
     }
 
@@ -200,20 +318,39 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
         // $this->dumpAllHTML();
     }
 
-
     public function testFacebookNormalCase() {
         // set up posts with exclamation
         $this->instance->network_username = 'Mark Zuckerberg';
         $this->instance->network = 'facebook';
         $builders = self::setUpPublicInsight($this->instance);
         $year = Date('Y');
+        // posts with LOLs
         for ($i=0; $i<5; $i++) {
             $builders[] = FixtureBuilder::build('posts',
                 array(
-                    'post_text' => 'LOL, this is a post that I did!',
-                    'pub_date' => "$year-12-07",
+                    'post_text' => 'lmao, that was a funny post!',
+                    'pub_date' => "$year-02-07",
                     'author_username' => $this->instance->network_username,
                     'network' => $this->instance->network,
+                    'in_reply_to_post_id' => $i+99999
+                )
+            );
+        }
+
+        // posts that were LOLed at
+        for ($i=0; $i<5; $i++) {
+            $score = $i+100;
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => "I just said the funniest thing x$score!",
+                    'pub_date' => "$year-02-07",
+                    'author_username' => 'Funnyperson',
+                    'author_fullname' => 'Funny Person',
+                    'network' => $this->instance->network,
+                    'post_id' => $i+99999,
+                    'retweet_count_cache' => 100+$i,
+                    'favlike_count_cache' => 100+$i,
+                    'reply_count_cache' => 100+$i
                 )
             );
         }
@@ -238,12 +375,107 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
         // $this->dumpAllHTML();
     }
 
+    public function testFacebookOnePost() {
+        $this->instance->network_username = 'Mark Zuckerberg';
+        $this->instance->network = 'facebook';
+        // set up posts with exclamation
+        $builders = self::setUpPublicInsight($this->instance);
+        $year = Date('Y');
+        // posts with LOLs
+        for ($i=0; $i<5; $i++) {
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => 'lmao, that was a funny post!',
+                    'pub_date' => "$year-02-07",
+                    'author_username' => $this->instance->network_username,
+                    'network' => $this->instance->network,
+                    'in_reply_to_post_id' => 99999
+                )
+            );
+        }
+
+        // posts that were LOLed at
+        for ($i=0; $i<5; $i++) {
+            $score = $i+100;
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => "I just said the funniest thing x$score!",
+                    'pub_date' => "$year-02-07",
+                    'author_username' => 'Funnyperson',
+                    'author_fullname' => 'Funny Person',
+                    'network' => $this->instance->network,
+                    'post_id' => $i+99999,
+                    'retweet_count_cache' => 100+$i,
+                    'favlike_count_cache' => 100+$i,
+                    'reply_count_cache' => 100+$i
+                )
+            );
+        }
+
+        $posts = array();
+        $insight_plugin = new EOYLOLCountInsight();
+        $insight_plugin->generateInsight($this->instance, null, $posts, 3);
+        //
+        // Assert that insight got inserted
+        $insight_dao = new InsightMySQLDAO();
+        $today = date ('Y-m-d');
+        $result = $insight_dao->getInsight('eoy_lol_count', $this->instance->id, $today);
+        $this->assertNotNull($result);
+        $this->assertIsA($result, "Insight");
+        $year = date('Y');
+        $this->assertEqual("The LOLs of Facebook, $year",
+            $result->headline);
+        $this->assertEqual("ROFL. Mark Zuckerberg LOLed at 5 things on Facebook in " .
+            "$year, including this LOL-worthy status update.", $result->text);
+
+        $this->dumpRenderedInsight($result, "One loled at post, Twitter");
+        // $this->dumpAllHTML();
+    }
+
+    public function testFacebookNoPost() {
+        $this->instance->network_username = 'Mark Zuckerberg';
+        $this->instance->network = 'facebook';
+        // set up posts with exclamation
+        $builders = self::setUpPublicInsight($this->instance);
+        $year = Date('Y');
+        // posts with LOLs
+        for ($i=0; $i<5; $i++) {
+            $builders[] = FixtureBuilder::build('posts',
+                array(
+                    'post_text' => 'lmao, that was a funny post!',
+                    'pub_date' => "$year-02-07",
+                    'author_username' => $this->instance->network_username,
+                    'network' => $this->instance->network
+                )
+            );
+        }
+
+        $posts = array();
+        $insight_plugin = new EOYLOLCountInsight();
+        $insight_plugin->generateInsight($this->instance, null, $posts, 3);
+        //
+        // Assert that insight got inserted
+        $insight_dao = new InsightMySQLDAO();
+        $today = date ('Y-m-d');
+        $result = $insight_dao->getInsight('eoy_lol_count', $this->instance->id, $today);
+        $this->assertNotNull($result);
+        $this->assertIsA($result, "Insight");
+        $year = date('Y');
+        $this->assertEqual("The LOLs of Facebook, $year",
+            $result->headline);
+        $this->assertEqual("ROFL. Mark Zuckerberg LOLed at 5 things on Facebook in " .
+            "$year. Gotta love a good LOL.", $result->text);
+
+        $this->dumpRenderedInsight($result, "No loled at posts, Twitter");
+        // $this->dumpAllHTML();
+    }
+
     public function testFacebookOneMatch() {
         $this->instance->network_username = 'Mark Zuckerberg';
         $this->instance->network = 'facebook';
         $builders = self::setUpPublicInsight($this->instance);
         $year = Date('Y');
-        // set up posts with no exclamation
+        // set up one post with a LOL
         $builders[] = FixtureBuilder::build('posts',
             array(
                 'post_text' => 'LOL this is a post that I did',
@@ -266,8 +498,8 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
         $year = date('Y');
         $this->assertEqual("The LOLs of Facebook, $year",
             $result->headline);
-        $this->assertEqual("ROFL. Mark Zuckerberg LOLed once on Facebook in " .
-            "$year.", $result->text);
+        $this->assertEqual("Mark Zuckerberg LOLed once on Facebook in " .
+            "$year. Not the funniest of years.", $result->text);
 
         $this->dumpRenderedInsight($result, "One match, Facebook");
         // $this->dumpAllHTML();
@@ -285,7 +517,7 @@ class TestOfEOYLOLCountInsight extends ThinkUpInsightUnitTestCase {
     }
 
     private function dumpRenderedInsight($result, $message) {
-        return false;
+        // return false;
         if (isset($message)) {
             $this->debug("<h4 style=\"text-align: center; margin-top: 20px;\">$message</h4>");
         }
