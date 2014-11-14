@@ -127,8 +127,8 @@ class TestOfEOYExclamationCountInsight extends ThinkUpInsightUnitTestCase {
             "tweets</strong>. That's 100% of @username's total tweets this year!",
             $result->text);
 
-        // $this->dumpRenderedInsight($result, "Normal case, Twitter");
-        $this->dumpAllHTML();
+        $this->dumpRenderedInsight($result, "Normal case, Twitter");
+        // $this->dumpAllHTML();
     }
 
     public function testTwitterNoMatches() {
@@ -165,7 +165,7 @@ class TestOfEOYExclamationCountInsight extends ThinkUpInsightUnitTestCase {
         $this->assertEqual("In $year, @ev didn't use one exclamation point on " .
             "Twitter. Must be holding out for something really exciting!", $result->text);
 
-        $this->dumpRenderedInsight($result, "Normal case, Twitter");
+        $this->dumpRenderedInsight($result, "No matches, Twitter");
         // $this->dumpAllHTML();
     }
 
@@ -211,7 +211,7 @@ class TestOfEOYExclamationCountInsight extends ThinkUpInsightUnitTestCase {
             "containing exclamation points. That's 100% of Mark Zuckerberg's total " .
             "Facebook posts this year!", $result->text);
 
-        $this->dumpRenderedInsight($result, "Normal case, Twitter");
+        $this->dumpRenderedInsight($result, "Normal case, Facebook");
         // $this->dumpAllHTML();
     }
 
@@ -251,8 +251,8 @@ class TestOfEOYExclamationCountInsight extends ThinkUpInsightUnitTestCase {
         $this->assertEqual("In $year, Mark Zuckerberg didn't use one exclamation point on " .
             "Facebook. Must be holding out for something really exciting!", $result->text);
 
-        $this->dumpRenderedInsight($result, "Normal case, Twitter");
-        // $this->dumpAllHTML();
+        // $this->dumpRenderedInsight($result, "No matches, Facebook");
+        $this->dumpAllHTML();
     }
 
     private function dumpAllHTML() {
