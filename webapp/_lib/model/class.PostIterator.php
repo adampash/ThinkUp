@@ -93,6 +93,11 @@ class PostIterator implements Iterator {
             if ($row) {
                 $post = new Post($row);
                 $this->row = $post;
+
+                // added two lines below
+                $link_dao = new LinkMySQLDAO();
+                $post->links = $link_dao->getLinksForPost($post->post_id, $post->network);
+
                 $this->valid = true;
             } else {
                 // close our cursor...
