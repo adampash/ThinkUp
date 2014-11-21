@@ -40,21 +40,27 @@ class EOYMostLinksInsight extends InsightPluginParent implements InsightPlugin {
     public function generateInsight(Instance $instance, User $user, $last_week_of_posts, $number_days) {
         parent::generateInsight($instance, $user, $last_week_of_posts, $number_days);
         $this->logger->logInfo("Begin generating insight", __METHOD__.','.__LINE__);
-        $insight_text = '';
+        $slug = 'eoy_most_links';
+        $date = '12/12';
+        $year = date('Y');
 
-        // $should_generate_insight = self::shouldGenerateAnnualInsight( 'eoy_exclamation_count', $instance, $insight_date='today',
-        //     $regenerate_existing_insight=false, $day_of_week = $day_of_week, count($last_week_of_posts));
-        $should_generate_insight = true;
+        $should_generate_insight = self::shouldGenerateEndOfYearAnnualInsight(
+            $slug,
+            $instance,
+            $insight_date = "$year-$date",
+            false,
+            $day_of_year = $date
+        );
+
         if ($should_generate_insight) {
             $insight = new Insight();
             $insight->instance_id = $instance->id;
-            $insight->slug = 'eoy_most_links';
+            $insight->slug = $slug;
             $insight->date = date('Y-m-d');
             $insight->eoy = true;
 
             $count = 0;
             $post_dao = DAOFactory::getDAO('PostDAO');
-            $year = date('Y');
             $network = $instance->network;
 
             $last_year_of_posts = $this->getYearOfLinks($instance);
